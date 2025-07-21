@@ -27,21 +27,27 @@ import lombok.Setter;
 @Builder
 public class Order {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(nullable = false)
-	private String productName;
+    @Column(unique = true, nullable = false)
+    private String customerOrderId;
 
-	@Column(nullable = false)
-	private int quantity;
 
-	@Column(nullable = false)
-	private BigDecimal totalPrice;
+    @Column(nullable = false)
+    private String productName;
 
-	@Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private String productId;
+
+    @Column(nullable = false)
+    private int quantity;
+
+    @Column(nullable = false)
+    private BigDecimal totalPrice;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
 }
-

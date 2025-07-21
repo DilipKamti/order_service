@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.microservice.order.service.dto.ApiResponse;
 import com.microservice.order.service.dto.OrderRequest;
-import com.microservice.order.service.dto.OrderRequestV2;
 import com.microservice.order.service.dto.OrderResponse;
 import com.microservice.order.service.service.OrderService;
 
@@ -32,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/v1/orders")
+@RequestMapping("/api/v1/order")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Order Controller", description = "APIs to manage orders")
@@ -43,9 +42,8 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "Create a new order")
-    public ResponseEntity<ApiResponse<OrderResponse>> createOrder( @RequestBody OrderRequestV2 request) {
-    	System.out.println("Received: " + request);
-        OrderResponse response = orderService.createOrder(request);
+    public ResponseEntity<ApiResponse<List<OrderResponse>>> createOrder( @RequestBody List<OrderRequest> request) {
+        List<OrderResponse> response = orderService.createOrder(request);
         return ResponseEntity.ok(ApiResponse.success(response, "Order created successfully"));
     }
 
@@ -68,27 +66,15 @@ public class OrderController {
     public ResponseEntity<ApiResponse<Page<OrderResponse>>> getPaginatedOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id,desc") String[] sort
-    ) {
-        Sort sortObj = Sort.by(
-            Arrays.stream(sort)
-                .filter(s -> s != null && !s.isBlank())
+            @RequestParam(defaultValue = "id,desc") String[] sort) {
+
+        Sort sortObj = Sort.by(Arrays.stream(sort)
                 .map(s -> {
                     String[] parts = s.split(",");
-                    String field = parts[0].trim();
-                    String direction = (parts.length > 1) ? parts[1].trim() : "asc";
-
-                    Sort.Direction dir;
-                    try {
-                        dir = Sort.Direction.fromString(direction.toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        dir = Sort.Direction.ASC; // fallback
-                    }
-
-                    return new Sort.Order(dir, field);
-                })
-                .toList()
-        );
+                    String field = parts[0];
+                    Sort.Direction direction = parts.length > 1 ? Sort.Direction.fromString(parts[1]) : Sort.Direction.ASC;
+                    return new Sort.Order(direction, field);
+                }).toList());
 
         Pageable pageable = PageRequest.of(page, size, sortObj);
         Page<OrderResponse> paginated = orderService.getAllOrders(pageable);
@@ -108,6 +94,4 @@ public class OrderController {
         orderService.deleteOrder(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Order deleted successfully"));
     }
-    
-    
 }

@@ -6,12 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.microservice.order.service.dto.OrderRequest;
-import com.microservice.order.service.dto.OrderRequestV2;
 import com.microservice.order.service.dto.OrderResponse;
 
 public interface OrderService {
 
-    OrderResponse createOrder(OrderRequestV2 request);
+    List<OrderResponse> createOrder(List<OrderRequest> request);
 
     OrderResponse getOrderById(Long id);
 

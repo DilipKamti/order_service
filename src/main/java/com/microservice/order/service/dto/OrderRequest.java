@@ -8,10 +8,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record OrderRequest(
-	    @NotBlank String productName,
-	    @NotNull @Min(1) Integer quantity,
-	    @NotNull @DecimalMin("0.0") BigDecimal totalPrice,
-	    @NotNull OrderStatus status
-	) {}
-
+        @NotBlank String productName,
+        @NotBlank String productId,
+        @NotNull @Min(1) Integer quantity,
+        @NotNull @DecimalMin("0.0") BigDecimal totalPrice,
+        @NotNull OrderStatus status
+) {}
 
