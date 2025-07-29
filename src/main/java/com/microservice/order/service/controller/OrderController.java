@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Create a new order")
     public ResponseEntity<ApiResponse<List<OrderResponse>>> createOrder( @RequestBody List<OrderRequest> request) {
         List<OrderResponse> response = orderService.createOrder(request);
@@ -48,6 +50,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Operation(summary = "Get an order by ID")
     public ResponseEntity<ApiResponse<OrderResponse>> getOrder(@PathVariable Long id) {
         OrderResponse response = orderService.getOrderById(id);
@@ -55,6 +58,7 @@ public class OrderController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Operation(summary = "Get all orders (no pagination)")
     public ResponseEntity<ApiResponse<List<OrderResponse>>> getAllOrders() {
         List<OrderResponse> orders = orderService.getAllOrders();
@@ -62,6 +66,7 @@ public class OrderController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Operation(summary = "Get paginated orders")
     public ResponseEntity<ApiResponse<Page<OrderResponse>>> getPaginatedOrders(
             @RequestParam(defaultValue = "0") int page,
@@ -82,6 +87,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Update an order by ID")
     public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(@PathVariable Long id, @Valid @RequestBody OrderRequest request) {
         OrderResponse response = orderService.updateOrder(id, request);
@@ -89,6 +95,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Delete an order by ID")
     public ResponseEntity<ApiResponse<Object>> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
